@@ -7,6 +7,7 @@ import chat.rocket.android.infrastructure.LocalRepository
 import chat.rocket.android.server.domain.*
 import chat.rocket.android.server.infrastructure.RocketChatClientFactory
 import chat.rocket.common.model.Token
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -35,6 +36,7 @@ class LoginPresenterTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         `when`(serverInteractor.get()).thenReturn(currentServer)
+        `when`(strategy.isTest).thenReturn(true)
         loginPresenter = LoginPresenter(
             view, strategy, navigator, tokenRepository, localRepository, settingsInteractor,
             analyticsManager, saveCurrentServer, saveAccountInteractor, factory, serverInteractor
@@ -45,6 +47,12 @@ class LoginPresenterTest {
     fun testAttach() {
         loginPresenter.setupView()
         assertNotNull(view)
+    }
+
+    @Test
+    fun checkAuthenticateAndSaveUserSuccessfully() = runBlocking {
+        loginPresenter.setupView()
+        loginPresenter.authenticateWithUserAndPassword("abcd", "1234")
     }
 
     @Test
